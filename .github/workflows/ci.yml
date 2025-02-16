@@ -1,0 +1,32 @@
+name: CI
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - "main"
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Get Node.js version
+        run: echo "NODE_VERSION=$(cat .node-version)" >> $GITHUB_ENV
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Check formatting
+        run: yarn prettier --check .
+        continue-on-error: true
+        id: prettier
+      - name: Check linting
+        run: yarn stylelint "**/*.css" "**/*.astro"
+        continue-on-error: true
+        id: stylelint
+      - name: Check if any formatting or linting failed
+        if: steps.prettier.outcome == 'failure' || steps.stylelint.outcome == 'failure'
+        run: exit 1
