@@ -9,6 +9,14 @@ export default defineConfig({
   devToolbar: {
     enabled: false,
   },
+  image: {
+    domains: ["images.microcms-assets.io"],
+    remotePatterns: [
+      {
+        protocol: "https",
+      },
+    ],
+  },
   vite: {
     define: {
       "import.meta.env.MICROCMS_SERVICE_DOMAIN":
